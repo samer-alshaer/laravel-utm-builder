@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types = 1);
 
 namespace Samer\UtmBuilder;
 
@@ -12,16 +12,29 @@ class UtmBuilder
     use Macroable;
 
     protected string $baseUrl;
-    protected string $path = '';
-    protected array $utmParams = [];
+    protected string $path       = '';
+    protected array $utmParams   = [];
     protected array $queryParams = [];
+
+    /**
+     * Default configuration values (used when outside Laravel)
+     */
+    protected static array $defaults = [
+        'base_url'          => '',
+        'client_url'        => '',
+        'ref_prefix'        => 'ref_',
+        'lowercase'         => true,
+        'replace_spaces'    => true,
+        'space_replacement' => '_',
+        'presets'           => [],
+    ];
 
     /**
      * Create a new UtmBuilder instance.
      */
     public function __construct(?string $baseUrl = null)
     {
-        $this->baseUrl = $baseUrl ?? config('utm-builder.base_url', config('app.url', ''));
+        $this->baseUrl = $baseUrl ?? $this->getConfig('base_url', '');
     }
 
     /**
@@ -37,7 +50,7 @@ class UtmBuilder
      */
     public static function client(): static
     {
-        return new static(config('utm-builder.client_url'));
+        return new static(self::getConfigStatic('client_url'));
     }
 
     /**
@@ -65,7 +78,7 @@ class UtmBuilder
      */
     public function preset(string $presetName): static
     {
-        $presets = config('utm-builder.presets', []);
+        $presets = $this->getConfig('presets', []);
 
         if (isset($presets[$presetName])) {
             $this->utmParams = array_merge($this->utmParams, $presets[$presetName]);
@@ -143,7 +156,7 @@ class UtmBuilder
 
         foreach ($params as $key => $value) {
             if (in_array($key, $allowedKeys)) {
-                $this->utmParams[$key] = $this->sanitize($value);
+                $this->utmParams[$key] = $this->sanitize((string) $value);
             }
         }
 
@@ -175,7 +188,7 @@ class UtmBuilder
      */
     public function ref(string $key, mixed $value): static
     {
-        $prefix = config('utm-builder.ref_prefix', 'ref_');
+        $prefix                            = $this->getConfig('ref_prefix', 'ref_');
         $this->queryParams[$prefix . $key] = $value;
 
         return $this;
@@ -206,8 +219,8 @@ class UtmBuilder
      */
     public function reset(): static
     {
-        $this->path = '';
-        $this->utmParams = [];
+        $this->path        = '';
+        $this->utmParams   = [];
         $this->queryParams = [];
 
         return $this;
@@ -250,10 +263,10 @@ class UtmBuilder
     public function toArray(): array
     {
         return [
-            'url' => $this->build(),
-            'base_url' => $this->baseUrl,
-            'path' => $this->path,
-            'utm_params' => $this->utmParams,
+            'url'          => $this->build(),
+            'base_url'     => $this->baseUrl,
+            'path'         => $this->path,
+            'utm_params'   => $this->utmParams,
             'query_params' => $this->queryParams,
         ];
     }
@@ -303,16 +316,86 @@ class UtmBuilder
      */
     protected function sanitize(string $value): string
     {
-        if (config('utm-builder.lowercase', true)) {
+        if ($this->getConfig('lowercase', true)) {
             $value = Str::lower($value);
         }
 
-        if (config('utm-builder.replace_spaces', true)) {
-            $replacement = config('utm-builder.space_replacement', '_');
-            $value = str_replace(' ', $replacement, $value);
+        if ($this->getConfig('replace_spaces', true)) {
+            $replacement = $this->getConfig('space_replacement', '_');
+            $value       = str_replace(' ', $replacement, $value);
         }
 
         return $value;
+    }
+
+    /**
+     * Get configuration value safely.
+     */
+    protected function getConfig(string $key, mixed $default = null): mixed
+    {
+        return self::getConfigStatic($key, $default);
+    }
+
+    /**
+     * Get configuration value statically (safe for non-Laravel environments).
+     */
+    protected static function getConfigStatic(string $key, mixed $default = null): mixed
+    {
+        // Check if Laravel's config helper is available and app is booted
+        if (function_exists('config')) {
+            try {
+                // Check if app container exists and is booted
+                if (function_exists('app') && app()->bound('config')) {
+                    $value = config("utm-builder.{$key}");
+
+                    if ($value !== null) {
+                        return $value;
+                    }
+
+                    // Fallback to app.url for base_url
+                    if ($key === 'base_url') {
+                        return config('app.url', $default);
+                    }
+                }
+            } catch (\Throwable $e) {
+                // Laravel not available or not booted
+            }
+        }
+
+        // Use static defaults
+        return self::$defaults[$key] ?? $default;
+    }
+
+    /**
+     * Set default configuration (useful for testing outside Laravel).
+     */
+    public static function setDefaults(array $defaults): void
+    {
+        self::$defaults = array_merge(self::$defaults, $defaults);
+    }
+
+    /**
+     * Get current defaults.
+     */
+    public static function getDefaults(): array
+    {
+        return self::$defaults;
+    }
+
+    /**
+     * Reset defaults to original values.
+     */
+    public static function resetDefaults(): void
+    {
+        self::$defaults = [
+            'base_url'          => '',
+            'client_url'        => '',
+            'ref_prefix'        => 'ref_',
+            'lowercase'         => true,
+            'replace_spaces'    => true,
+            'space_replacement' => '_',
+            'presets'           => [],
+        ];
     }
 
     /**

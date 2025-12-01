@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types = 1);
 
 namespace Samer\UtmBuilder\Tests\Unit;
 
@@ -13,33 +13,32 @@ class UtmBuilderTest extends TestCase
     {
         parent::setUp();
 
-        // Mock config function for standalone tests
-        if (! function_exists('config')) {
-            function config($key, $default = null)
-            {
-                $configs = [
-                    'utm-builder.base_url' => 'https://example.com',
-                    'utm-builder.client_url' => 'https://client.example.com',
-                    'utm-builder.ref_prefix' => 'ref_',
-                    'utm-builder.lowercase' => true,
-                    'utm-builder.replace_spaces' => true,
-                    'utm-builder.space_replacement' => '_',
-                    'utm-builder.presets' => [
-                        'email' => [
-                            'utm_source' => 'email',
-                            'utm_medium' => 'email',
-                        ],
-                        'sms' => [
-                            'utm_source' => 'sms',
-                            'utm_medium' => 'sms',
-                        ],
-                    ],
-                    'app.url' => 'https://example.com',
-                ];
+        UtmBuilder::resetDefaults();
 
-                return $configs[$key] ?? $default;
-            }
-        }
+        UtmBuilder::setDefaults([
+            'base_url'          => 'https://example.com',
+            'client_url'        => 'https://client.example.com',
+            'ref_prefix'        => 'ref_',
+            'lowercase'         => true,
+            'replace_spaces'    => true,
+            'space_replacement' => '_',
+            'presets'           => [
+                'email' => [
+                    'utm_source' => 'email',
+                    'utm_medium' => 'email',
+                ],
+                'sms'   => [
+                    'utm_source' => 'sms',
+                    'utm_medium' => 'sms',
+                ],
+            ],
+        ]);
+    }
+
+    protected function tearDown(): void
+    {
+        UtmBuilder::resetDefaults();
+        parent::tearDown();
     }
 
     public function test_it_creates_basic_url(): void
@@ -103,6 +102,10 @@ class UtmBuilderTest extends TestCase
 
     public function test_it_applies_preset(): void
     {
+        $defaults = UtmBuilder::getDefaults();
+        $this->assertArrayHasKey('presets', $defaults);
+        $this->assertArrayHasKey('email', $defaults['presets']);
+
         $url = UtmBuilder::make('https://example.com')
             ->path('page')
             ->preset('email')
@@ -223,8 +226,8 @@ class UtmBuilderTest extends TestCase
         $url = UtmBuilder::make('https://example.com')
             ->path('page')
             ->utm([
-                'utm_source' => 'google',
-                'utm_medium' => 'cpc',
+                'utm_source'   => 'google',
+                'utm_medium'   => 'cpc',
                 'utm_campaign' => 'test',
             ])
             ->build();
