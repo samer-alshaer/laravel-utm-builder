@@ -4,7 +4,7 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/samer-alshaer/laravel-utm-builder.svg?style=flat-square)](https://packagist.org/packages/samer-alshaer/laravel-utm-builder)
 [![License](https://img.shields.io/packagist/l/samer-alshaer/laravel-utm-builder.svg?style=flat-square)](https://packagist.org/packages/samer-alshaer/laravel-utm-builder)
 
-A professional Laravel package for generating URLs with UTM parameters. Features a fluent API, presets, helpers, Blade directives, and full Laravel integration.
+A Laravel package for generating URLs with UTM parameters. Features a fluent API, presets, helpers, Blade directives, and full Laravel integration.
 
 ## Features
 
@@ -211,23 +211,6 @@ Add your own presets in `config/utm-builder.php`:
 ],
 ```
 
-## DataTables Example
-
-```php
-return DataTables::of($query)
-    ->addColumn('link', function ($data) {
-        $link = utm_client("agent/{$data->uuid}", 'agent_registration', [
-            'ref_agent' => $data->id,
-        ]);
-
-        return '<button class="btn btn-sm copy-btn" data-link="' . $link . '">
-            <i class="fa fa-copy"></i> Copy
-        </button>';
-    })
-    ->rawColumns(['link'])
-    ->make(true);
-```
-
 ## Testing
 
 ```bash
@@ -244,7 +227,7 @@ Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 ## Security
 
-If you discover any security-related issues, please email your-email@example.com instead of using the issue tracker.
+If you discover any security-related issues, please email sameralshaer51@gmail.com instead of using the issue tracker.
 
 ## Credits
 
