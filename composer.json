@@ -1,0 +1,72 @@
+{
+    "name": "samer-alshaer/laravel-utm-builder",
+    "description": "A Laravel package for generating URLs with UTM parameters. Features fluent API, presets, helpers, and full Laravel integration.",
+    "keywords": [
+        "laravel",
+        "utm",
+        "utm-builder",
+        "url-builder",
+        "marketing",
+        "analytics",
+        "tracking",
+        "google-analytics",
+        "campaign-tracking"
+    ],
+    "homepage": "https://github.com/samer-alshaer/laravel-utm-builder",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Samer Alshaer",
+            "email": "sameralshaer51@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "illuminate/support": "^10.0|^11.0|^12.0",
+        "illuminate/contracts": "^10.0|^11.0|^12.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^8.0|^9.0|^10.0",
+        "phpunit/phpunit": "^10.0|^11.0",
+        "phpstan/phpstan": "^1.10",
+        "laravel/pint": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Samer\\UtmBuilder\\": "src/"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Samer\\UtmBuilder\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "test-coverage": "vendor/bin/phpunit --coverage-html coverage",
+        "format": "vendor/bin/pint",
+        "analyse": "vendor/bin/phpstan analyse"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "phpstan/extension-installer": true
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Samer\\UtmBuilder\\UtmBuilderServiceProvider"
+            ],
+            "aliases": {
+                "Utm": "Samer\\UtmBuilder\\Facades\\Utm"
+            }
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
