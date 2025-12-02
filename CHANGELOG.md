@@ -2,7 +2,24 @@
 
 All notable changes to `laravel-utm-builder` will be documented in this file.
 
+## [1.0.2] - 2025-12-02
+
+### Changed
+
+- Correct order of query parameters in URL building
+
 ## [1.0.1] - 2025-12-01
+
+### Changed
+
+- Improved configuration handling for non-Laravel environments
+- Added static defaults for testing outside Laravel context
+
+### Fixed
+
+- Fixed unit tests failing without Laravel application
+
+## [1.0.0] - 2025-12-01
 
 ### Added
 
@@ -17,12 +34,3 @@ All notable changes to `laravel-utm-builder` will be documented in this file.
 - Support for Laravel 10, 11, and 12
 - Comprehensive test suite
 - Arabic and English documentation
-
-### Changed
-
-- Improved configuration handling for non-Laravel environments
-- Added static defaults for testing outside Laravel context
-
-### Fixed
-
-- Fixed unit tests failing without Laravel application
