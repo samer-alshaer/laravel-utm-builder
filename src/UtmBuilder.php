@@ -237,7 +237,7 @@ class UtmBuilder
             $url .= '/' . ltrim($this->path, '/');
         }
 
-        $allParams = array_merge($this->utmParams, $this->queryParams);
+        $allParams = array_merge($this->queryParams, $this->utmParams);
 
         if (empty($allParams)) {
             return $url;
