@@ -168,7 +168,9 @@ class UtmBuilder
      */
     public function params(array $params): static
     {
-        $this->queryParams = array_merge($this->queryParams, $params);
+        foreach ($params as $key => $value) {
+            $this->param($key, $value);
+        }
 
         return $this;
     }
@@ -178,7 +180,7 @@ class UtmBuilder
      */
     public function param(string $key, mixed $value): static
     {
-        $this->queryParams[$key] = $value;
+        $this->queryParams[$key] = is_object($value) ? (string) $value : $value;
 
         return $this;
     }
@@ -188,8 +190,8 @@ class UtmBuilder
      */
     public function ref(string $key, mixed $value): static
     {
-        $prefix                            = $this->getConfig('ref_prefix', 'ref_');
-        $this->queryParams[$prefix . $key] = $value;
+        $prefix = $this->getConfig('ref_prefix', 'ref_');
+        $this->param($prefix . $key, $value);
 
         return $this;
     }
